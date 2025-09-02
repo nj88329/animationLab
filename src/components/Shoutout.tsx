@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
-  visible: {
+  show: {
     opacity: 1,
     y: 0,
     transition: { duration: 0.5, staggerChildren: 0.3 }
@@ -11,19 +11,33 @@ const cardVariants = {
 
 // Parent controls staggering
 const parentVariants = {
-  animate: {
+  hidden: {
+    opacity: 0,
+    y: 140,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
     transition: {
-      staggerChildren: 0.5, // delay before next grid starts
-      repeat: Infinity, // loop forever,
-     zIndex : 2
+      staggerChildren: 0.5, // delay between children
+      duration: 1.5,
+      ease: "easeInOut",
     }
-  }
+  },
+  exit: {
+    opacity: 0,
+    y: 140,
+    transition: { duration: 0.6, ease: "easeInOut" },
+  },
 };
+
 
 
 const childVariants = {
   hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0 }
+  show: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 40, transition: { duration: 0.5 } },
+
 };
 
 const Shoutout = () => {
@@ -32,11 +46,13 @@ const Shoutout = () => {
       <motion.div 
        variants={parentVariants}
         initial="hidden"
-        animate="animate" 
+        whileInView="show"   // 👈 triggers only when in viewport
+        viewport={{ once: false, amount: 0.2 }}
        className="outergrid ml-[10vw]  lg:w-[80vw] lg:h-[80vh] rounded-xl shadow-xl shadow-orange-900 bg-gradient-to-l from-purple-900 to-black grid grid-rows-3 md:grid-cols-3 place-items-center ">
       
       {/* Left grid */}
-      <motion.div initial={{ opacity: 0 , y : 40 }}
+      <motion.div 
+      initial={{ opacity: 0 , y : 40 }}
         animate={{ opacity: [1, 0, 1] , backgroundImage: [
       "linear-gradient(to right, #991b1b, #000000)", 
             "linear-gradient(to right, #065f46, #eab308)", 
@@ -46,21 +62,26 @@ const Shoutout = () => {
           ease: "easeInOut",
           repeat: Infinity
         }} 
-       className="leftgrid h-[20vh] w-[80%]   md:h-[50vh] md:w-[25vw]  md:ml-3 rounded-xl flex items-center justify-center  bg-gradient-to-r bg-orange-900 to-black ">
-        left
+       className="leftgrid relative h-[20vh] w-[80%]   md:h-[50vh] md:w-[25vw]  md:ml-3 rounded-xl flex items-center justify-center  bg-gradient-to-r bg-orange-900 to-black ">
+          <img src= '\public\assets\devops.jpeg' 
+            className  = 'absolute h-full w-full object-cover rounded-xl'/>
+          <h2 className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold drop-shadow-lg">
+             DEVELOPER
+          </h2>
       </motion.div>
 
       {/* Mid grid with cards stacked */}
       <motion.div
         variants={cardVariants} 
         initial="hidden"
-        whileInView="visible"
+        whileInView="show"
+         viewport={{ once: false, amount: 0.2 }} 
         className="midgrid bg-gradient-to-r bg-orange-900 to-black h-[20vh]  w-[80%]  md:h-[50vh] md:w-[25vw] rounded-xl relative flex" 
       >
         {/* Right card */}
         <motion.div  
           variants={childVariants}
-          className="absolute card right w-[14vh]  h-[70%] w-[30%] md:h-[25vh] md:w-[20vw]  bg-gradient-to-b from-green-800 to-black  ml-15 mt-10 flex items-center justify-center rounded-xl overflow-hidden"
+          className="absolute card right w-[14vh]   h-[70%] w-[30%] md:h-[25vh] md:w-[20vw]   bg-gradient-to-b from-green-800 to-black  ml-15 mt-10 flex items-center justify-center rounded-xl overflow-hidden"
           style={{ transform: "translateX(40px) rotate(10deg)" }}
         >
           <h1 className="heading text-yellow-600  text-sm  md:font-bold text-center">
@@ -71,8 +92,9 @@ const Shoutout = () => {
         {/* Middle card */}
         <motion.div 
           variants={childVariants}
-          className="absolute card mid w-[14vh] bg-gradient-to-t from-green-800 to-black h-[70%] w-[30%] md:h-[25vh] md:w-[20vw] ml-10 mt-7 flex items-center justify-center rounded-xl overflow-hidden"
-        >
+          className="absolute card mid w-[14vh] bg-gradient-to-t from-green-800 to-black  h-[70%] w-[30%] md:h-[25vh] md:w-[20vw]  ml-10 mt-7 flex items-center justify-center rounded-xl overflow-hidden"
+              style={{ transform: "translateX(40px) rotate(10deg)" }}
+       >
           <h1 className="heading text-yellow-600  text-sm  md:font-bold text-center">
             TAKE YOUR PRODUCT FROM ZERO<br />left
           </h1>
@@ -81,7 +103,7 @@ const Shoutout = () => {
         {/* Left card */}
         <motion.div
           variants={childVariants}
-          className="absolute card left  h-[70%] w-[30%] md:h-[25vh] md:w-[20vw]  bg-gradient-to-t from-green-800 to-black h-[25vh] w-[20vw] flex items-center justify-center rounded-xl overflow-hidden"
+          className="absolute card  h-[70%] w-[30%] md:h-[25vh] md:w-[20vw]  bg-gradient-to-t from-green-800 to-black  flex items-center justify-center rounded-xl overflow-hidden"
           style={{ transform: "translateX(-40px) rotate(-10deg)" }}
         >
           <h1 className="heading text-yellow-600 text-sm md:font-bold text-center ">
@@ -101,11 +123,16 @@ const Shoutout = () => {
           ease: "easeInOut",
           repeat: Infinity
         }} 
-  className="rightgrid  h-[20vh]   w-[80%]  md:h-[50vh] md:w-[25vw] bg-gradient-to-r bg-orange-900 to-black  md:-ml-4 rounded-xl flex items-center justify-center">
-        right
-      </motion.div>
+      className="rightgrid flex flex-rows-3  h-[20vh]  w-[80%]  md:h-[50vh] md:w-[25vw] bg-gradient-to-r bg-orange-900 to-black  md:-ml-4 rounded-xl">
+         <img src= '\public\assets\developer.jpeg' 
+            className  = 'absolute h-full w-full object-cover rounded-xl'/>
 
-   <div className = 'flex items-center justify-center gap-4 w-[80vw]'>
+          <h2 className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold drop-shadow-lg">
+             DEVOPS
+          </h2>
+      </motion.div>
+      
+   <div className = 'md:flex items-center justify-center gap-4 w-[80vw] '>
       <motion.div  initial={{  x : 50 , backgroundColor :"#0d7558ff" }}
         animate = {{x:150 , backgroundColor : "#1a68d6ff" }}
        transition={{
@@ -114,8 +141,8 @@ const Shoutout = () => {
            repeatType: "reverse",
           repeat: Infinity
         }} 
-       className = ' h-[20vh] w-[20vw] lg:h-[40vh] flex items-center justify-center shadow-lg rounded-lg shadow-red-900 [clip-path:polygon(0_10%,85%_10%,93%_0%,100%_5%,100%_100%,0_100%)]'>
-            <h2 className = 'font-bold text-white shadow-red-500 shadow-lg'>
+       className = 'hidden   md:flex md:h-[20vh] md:w-[20vw] lg:h-[40vh]   flex items-center justify-center shadow-lg rounded-lg shadow-red-900 [clip-path:polygon(0_10%,85%_10%,93%_0%,100%_5%,100%_100%,0_100%)]'>
+            <h2 className = 'md:font-bold text-sm text-white shadow-red-500 shadow-lg text-center '>
                 He does a great work.<br/>
                Does his work with <br/>
                 great perfection.
@@ -129,11 +156,12 @@ const Shoutout = () => {
            repeatType: "reverse",
           repeat: Infinity
         }} 
-       className = ' h-[20vh] w-[20vw]  lg:h-[40vh] flex items-center justify-center shadow-lg rounded-lg shadow-red-900  [clip-path:polygon(0_10%,85%_10%,93%_0%,100%_5%,100%_100%,0_100%)]'>
-            <h2 className = 'font-bold text-white shadow-red-500 shadow-lg'>
-                 He does a great work.<br/>
-               Does his work with <br/>
-                great perfection.
+       className = 'hidden md:flex  h-[20vh] w-[20vw]  lg:h-[40vh] flex items-center justify-center shadow-lg rounded-lg shadow-red-900  [clip-path:polygon(0_10%,85%_10%,93%_0%,100%_5%,100%_100%,0_100%)]'>
+            <h2 className = 'font-bold text-white shadow-red-500 shadow-lg text-center '>
+                 <br/>
+                  Want animations in framer <br/>
+                  React-three-fiber or GSAP.<br/>
+                 with utmost diligence.
             </h2>
       </motion.div>
        <motion.div  initial={{  x : 50, backgroundColor :"#0d695aff" }}
@@ -144,8 +172,8 @@ const Shoutout = () => {
            repeatType: "reverse",
           repeat: Infinity
         }} 
-       className = ' h-[20vh] w-[20vw]  lg:h-[40vh] flex items-center justify-center rounded-lg shadow-lg shadow-red-900  [clip-path:polygon(0_10%,85%_10%,93%_0%,100%_5%,100%_100%,0_100%)]'>
-            <h2 className = 'font-bold text-white shadow-red-500 shadow-lg'>
+       className = 'hidden  md:flex md:h-[20vh] md:w-[20vw]  lg:h-[40vh] flex items-center justify-center rounded-lg shadow-lg shadow-red-900  [clip-path:polygon(0_10%,85%_10%,93%_0%,100%_5%,100%_100%,0_100%)]'>
+            <h2 className = 'font-bold text-white shadow-red-500 shadow-lg  text-center'>
                  He does a great work.<br/>
                Does his work with <br/>
                 great perfection.
